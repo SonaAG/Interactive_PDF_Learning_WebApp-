@@ -2,3 +2,7 @@ streamlit
 pdfplumber
 transformers
 scikit-learn
+torch
+pandas
+numpy
+tensorflow>=2.0
