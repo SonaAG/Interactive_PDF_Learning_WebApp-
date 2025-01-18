@@ -1,8 +1,10 @@
 streamlit
 pdfplumber
-transformers
 scikit-learn
 torch
 pandas
 numpy
+transformers>=4.0.0
 tensorflow>=2.0
+tf-keras
+
