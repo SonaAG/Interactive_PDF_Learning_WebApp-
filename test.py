@@ -43,11 +43,21 @@ def provide_feedback(response, reference_text):
     return f"Your response similarity with the reference text is {similarity * 100:.2f}%."
 
 
+# Function for answering user queries based on PDF content
+def answer_query(context, query):
+    qa_pipeline = pipeline("question-answering")
+    try:
+        result = qa_pipeline({"context": context, "question": query})
+        return result["answer"]
+    except Exception:
+        return "I'm sorry, I couldn't find a relevant answer in the provided context."
+
+
 # Main Streamlit app
 def main():
     st.title("Interactive PDF Learning and Assessment Platform 📘")
 
-    menu = ["Upload & Summarize", "Generate Quiz", "Feedback System", "About"]
+    menu = ["Upload & Summarize", "Generate Quiz", "Feedback System", "Chat with PDF", "About"]
     choice = st.sidebar.selectbox("Menu", menu)
 
     if choice == "Upload & Summarize":
@@ -115,11 +125,30 @@ def main():
             except Exception as e:
                 st.error(f"Error processing PDF: {e}")
 
+    elif choice == "Chat with PDF":
+        st.subheader("Chat with Your PDF 📄🤖")
+        uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
+        if uploaded_file:
+            try:
+                text = extract_text_from_pdf(uploaded_file)
+                if text.strip():
+                    st.success("PDF uploaded and processed successfully!")
+                    user_query = st.text_input("Ask a question about the PDF:")
+                    if user_query:
+                        context = text[:2000]  # Limit context to the first 2000 characters for efficiency
+                        answer = answer_query(context, user_query)
+                        st.subheader("Answer:")
+                        st.write(answer)
+                else:
+                    st.error("The PDF contains no readable text.")
+            except Exception as e:
+                st.error(f"Error processing PDF: {e}")
+
     elif choice == "About":
         st.subheader("About This App")
         st.info(
             "This app provides tools for summarizing PDFs, generating quizzes, "
-            "and assessing responses using rule-based and NLP-based text analysis."
+            "providing feedback on answers, and chatting with PDF content using NLP models."
         )
 
 
